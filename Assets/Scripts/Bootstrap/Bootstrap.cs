@@ -1,9 +1,8 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
-using UnityEngine.SceneManagement;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 public class Bootstrap : MonoBehaviour
@@ -12,7 +11,7 @@ public class Bootstrap : MonoBehaviour
     [SerializeField] private ImageLoader loaderScreenPrefab;
     [SerializeField] private string imageUrl;
     
-    [SerializeField] private Text loadingProgressText;
+    [SerializeField] private Slider loadingProgressSlider;
 
     private List<Task> currentTasks = new List<Task>();
     private List<IProgressCounter> currentProgressCounters = new List<IProgressCounter>();
@@ -27,16 +26,21 @@ public class Bootstrap : MonoBehaviour
         ImageLoader imageLoader = Instantiate(loaderScreenPrefab, bootstrapCanvas.transform);
         Task imageLoadingTask = imageLoader.Load(imageUrl);
         AddLoader(imageLoadingTask, imageLoader);
+        imageLoader.transform.SetAsFirstSibling();
 
         PrefabsLoader prefabsLoader = new PrefabsLoader();
         Task prefabLoadingTask = prefabsLoader.LoadPrefab("Cube");
         AddLoader(prefabLoadingTask, prefabsLoader);
         
         SceneLoader sceneLoader = new SceneLoader();
-        Task sceneLoadingTask = sceneLoader.PreloadScene("Gameplay");
+        Task sceneLoadingTask = sceneLoader.PreloadScene("EmptyScene");
         AddLoader(sceneLoadingTask, sceneLoader);
         
         await Task.WhenAll(currentTasks);
+        
+        Debug.Log("All tasks completed");
+        
+        bootstrapCanvas.gameObject.SetActive(false);
     }
 
     private void Update()
@@ -59,7 +63,7 @@ public class Bootstrap : MonoBehaviour
             allTasksProgress += progressCounter.Progress;
         }
 
-        int result = (int)(Math.Round(allTasksProgress, 2) * 100);
-        loadingProgressText.text = result.ToString();
+        int result = (int)(Math.Round(allTasksProgress, 2));
+        loadingProgressSlider.value = result;
     }
 }

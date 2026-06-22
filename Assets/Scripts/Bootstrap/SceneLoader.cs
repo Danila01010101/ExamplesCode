@@ -2,7 +2,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class SceneLoader : MonoBehaviour, IProgressCounter
+public class SceneLoader : IProgressCounter
 {
     private AsyncOperation _sceneLoad;
 
@@ -16,17 +16,12 @@ public class SceneLoader : MonoBehaviour, IProgressCounter
         while (_sceneLoad.progress < 0.9f)
         {
             Progress = _sceneLoad.progress;
+            Debug.Log("Scene load awaiting");
             await Task.Yield();
         }
 
         Progress = 1f;
 
         Debug.Log("Scene loaded and waiting for activation");
-    }
-
-    public void ActivateScene()
-    {
-        if (_sceneLoad != null)
-            _sceneLoad.allowSceneActivation = true;
     }
 }
