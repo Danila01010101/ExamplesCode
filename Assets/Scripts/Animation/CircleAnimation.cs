@@ -9,51 +9,52 @@ public class CircleAnimation : MonoBehaviour
 {
     private Image circle;
     private float currentAlpha = 0;
-    private bool shouldBeVisible;
-    private bool animate;
+    private bool shouldBeVisible = true;
     private CancellationTokenSource currentAnimationToken;
     
     private int clicksCount;
     
-    private void Start()
+    private async void Start()
     {
         circle = GetComponent<Image>();
         
         currentAnimationToken = new CancellationTokenSource();
         
-        Animate(currentAnimationToken.Token);
+        await Animate(currentAnimationToken.Token);
+        
+        Debug.Log("Animation completed.");
     }
 
-    private void Update()
+    private async void Update()
     {
         if (Input.GetKeyDown(KeyCode.H))
         {
-            circle.ChangeAlpha(0, 1, new CancellationTokenRegistration().Token);
+            await circle.ChangeAlpha(0, 1, currentAnimationToken.Token);
         }
         
         if (Input.GetKeyDown(KeyCode.S))
         {
-            circle.ChangeAlpha(1, 1, new CancellationTokenRegistration().Token);
+            await circle.ChangeAlpha(1, 1, currentAnimationToken.Token);
         }
         
         if (Input.GetKeyDown(KeyCode.D))
         {
-            circle.transform.MoveTo(circle.transform.position + Vector3.right * 100, 1, new CancellationTokenRegistration().Token);
+            await circle.transform.MoveTo(circle.transform.position + Vector3.right * 100, 1, currentAnimationToken.Token);
         }
         
         if (Input.GetKeyDown(KeyCode.A))
         {
-            circle.transform.MoveTo(circle.transform.position - Vector3.right * 100, 1, new CancellationTokenRegistration().Token);
+            await circle.transform.MoveTo(circle.transform.position - Vector3.right * 100, 1, currentAnimationToken.Token);
         }
         
         if (Input.GetKeyDown(KeyCode.Q))
         {
-            circle.transform.MoveTo(circle.transform.position + Vector3.up * 100, 1, new CancellationTokenRegistration().Token);
+            await circle.transform.MoveTo(circle.transform.position + Vector3.up * 100, 1, currentAnimationToken.Token);
         }
         
         if (Input.GetKeyDown(KeyCode.E))
         {
-            circle.transform.MoveTo(circle.transform.position - Vector3.up * 100, 1, new CancellationTokenRegistration().Token);
+            await circle.transform.MoveTo(circle.transform.position - Vector3.up * 100, 1, currentAnimationToken.Token);
         }
         
         if (Input.GetMouseButtonDown(0))
@@ -65,10 +66,25 @@ public class CircleAnimation : MonoBehaviour
 
     private async Task Animate(CancellationToken token)
     {
+        circle.color = new Color(1, 1, 1, 0);
+        
         while (true)
         {
             await Task.Yield();
-
+                    
+            if (token.IsCancellationRequested)
+            {
+                if (shouldBeVisible)
+                {
+                    shouldBeVisible = true;
+                    SetColor(0);
+                }
+                
+                break;
+            }
+            
+            SetColor(currentAlpha);
+            
             if (shouldBeVisible)
             {
                 currentAlpha += Time.deltaTime;
@@ -76,9 +92,7 @@ public class CircleAnimation : MonoBehaviour
                 if (currentAlpha >= 1f)
                 {
                     shouldBeVisible = false;
-                    
-                    if (token.IsCancellationRequested)
-                        return;
+                    SetColor(1);
                 }
             }
             else
@@ -88,13 +102,26 @@ public class CircleAnimation : MonoBehaviour
                 if (currentAlpha <= 0)
                 {
                     shouldBeVisible = true;
-                    
-                    if (token.IsCancellationRequested)
-                        return;
+                    SetColor(0);
+                    break;
                 }
             }
-            
-            circle.color = new Color(1, 1, 1, currentAlpha);
+
+            Debug.Log(currentAlpha);
         }
+    }
+
+    private void SetColor(float newValue)
+    {
+        if (circle != null)
+        {
+            circle.color = new Color(1, 1, 1, newValue);
+        }
+    }
+
+    private void OnDestroy()
+    {
+        currentAnimationToken.Cancel();
+        currentAnimationToken.Dispose();
     }
 }
