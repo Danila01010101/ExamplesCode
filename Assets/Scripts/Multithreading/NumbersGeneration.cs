@@ -8,12 +8,14 @@ public class NumbersGeneration : MonoBehaviour
 {
     private int numbersAmount = 1000;
 
-    private void Start()
+    private async void Start()
     {
-        Task.Run(() => Generate());
+        var task = Task.Run(() => Generate());
+        await task;
+        Debug.Log(task.Result);
     }
 
-    private void Generate()
+    private int Generate()
     {
         int result = 0;
         Random rand = new Random();
@@ -23,9 +25,8 @@ public class NumbersGeneration : MonoBehaviour
             int newNumber = rand.Next(0, 1000);
             result += newNumber;
             result /= 2;
-            Debug.Log(i + " in thread" + Thread.CurrentThread.ManagedThreadId);
         }
-        
-        Debug.Log(result + " in thread" + Thread.CurrentThread.ManagedThreadId);
+
+        return result;
     }
 }
