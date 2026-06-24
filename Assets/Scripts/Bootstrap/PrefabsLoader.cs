@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -15,7 +16,8 @@ public class PrefabsLoader: IProgressCounter
             Progress = task.progress;
             await Task.Yield();
         }
-        
+
+        Progress = 1f;
         Debug.Log("Loaded prefab " + prefabPath);
     }
 }

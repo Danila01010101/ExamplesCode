@@ -1,4 +1,6 @@
+using System;
 using System.Collections;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -12,6 +14,9 @@ public class ImageLoader : MonoBehaviour, IProgressCounter
     public async Task Load(string url)
     {
         Debug.Log("Start loading image " + url);
+            
+        var image = GetComponent<RawImage>();
+        image.color = new Color(1, 1, 1, 0);
         
         using (UnityWebRequest request = UnityWebRequestTexture.GetTexture(url))
         {
@@ -29,10 +34,13 @@ public class ImageLoader : MonoBehaviour, IProgressCounter
             }
             else
             {
-                GetComponent<RawImage>().texture = ((DownloadHandlerTexture)request.downloadHandler).texture;
+                image.color = Color.white;
+                image.texture = ((DownloadHandlerTexture)request.downloadHandler).texture;
                 
                 Debug.Log("Image loaded " + url);
             }
         }
+
+        Progress = 1f;
     }
 }

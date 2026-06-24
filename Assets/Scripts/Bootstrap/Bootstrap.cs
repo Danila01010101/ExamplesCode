@@ -16,13 +16,16 @@ public class Bootstrap : MonoBehaviour
     private List<Task> currentTasks = new List<Task>();
     private List<IProgressCounter> currentProgressCounters = new List<IProgressCounter>();
     
-    private void Awake()
+    private bool loading;
+    
+    private async void Start()
     {
-        Initialize();
+        await Initialize();
     }
 
-    private async void Initialize()
+    private async Task Initialize()
     {
+        loading = true;
         ImageLoader imageLoader = Instantiate(loaderScreenPrefab, bootstrapCanvas.transform);
         Task imageLoadingTask = imageLoader.Load(imageUrl);
         AddLoader(imageLoadingTask, imageLoader);
@@ -36,16 +39,24 @@ public class Bootstrap : MonoBehaviour
         Task sceneLoadingTask = sceneLoader.PreloadScene("EmptyScene");
         AddLoader(sceneLoadingTask, sceneLoader);
         
+        await imageLoadingTask;
+        
         await Task.WhenAll(currentTasks);
         
-        Debug.Log("All tasks completed");
+        loading = false;
+        loadingProgressSlider.value = 1;
         
-        bootstrapCanvas.gameObject.SetActive(false);
+        Debug.Log("All tasks completed loading scene.");
+        
+        sceneLoader.ActivateScene();
     }
 
     private void Update()
     {
-        UpdateProgress();
+        if (loading)
+        {
+            UpdateProgress();
+        }
     }
 
     private void AddLoader(Task task, IProgressCounter progressCounter)
@@ -63,7 +74,8 @@ public class Bootstrap : MonoBehaviour
             allTasksProgress += progressCounter.Progress;
         }
 
-        int result = (int)(Math.Round(allTasksProgress, 2));
+        float result = (float)(Math.Round(allTasksProgress / currentProgressCounters.Count, 2));
+        Debug.Log(result);
         loadingProgressSlider.value = result;
     }
 }
