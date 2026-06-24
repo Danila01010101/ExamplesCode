@@ -8,7 +8,7 @@ using UnityEngine.UI;
 public class CircleAnimation : MonoBehaviour
 {
     private Image circle;
-    private float currentAlfa = 0;
+    private float currentAlpha = 0;
     private bool shouldBeVisible;
     private bool animate;
     private CancellationTokenSource currentAnimationToken;
@@ -28,32 +28,32 @@ public class CircleAnimation : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.H))
         {
-            circle.ChangeAlfa(0, 1);
+            circle.ChangeAlpha(0, 1, new CancellationTokenRegistration().Token);
         }
         
         if (Input.GetKeyDown(KeyCode.S))
         {
-            circle.ChangeAlfa(1, 1);
+            circle.ChangeAlpha(1, 1, new CancellationTokenRegistration().Token);
         }
         
         if (Input.GetKeyDown(KeyCode.D))
         {
-            circle.transform.MoveTo(circle.transform.position + Vector3.right * 100, 1);
+            circle.transform.MoveTo(circle.transform.position + Vector3.right * 100, 1, new CancellationTokenRegistration().Token);
         }
         
         if (Input.GetKeyDown(KeyCode.A))
         {
-            circle.transform.MoveTo(circle.transform.position - Vector3.right * 100, 1);
+            circle.transform.MoveTo(circle.transform.position - Vector3.right * 100, 1, new CancellationTokenRegistration().Token);
         }
         
         if (Input.GetKeyDown(KeyCode.Q))
         {
-            circle.transform.MoveTo(circle.transform.position + Vector3.up * 100, 1);
+            circle.transform.MoveTo(circle.transform.position + Vector3.up * 100, 1, new CancellationTokenRegistration().Token);
         }
         
         if (Input.GetKeyDown(KeyCode.E))
         {
-            circle.transform.MoveTo(circle.transform.position - Vector3.up * 100, 1);
+            circle.transform.MoveTo(circle.transform.position - Vector3.up * 100, 1, new CancellationTokenRegistration().Token);
         }
         
         if (Input.GetMouseButtonDown(0))
@@ -71,9 +71,9 @@ public class CircleAnimation : MonoBehaviour
 
             if (shouldBeVisible)
             {
-                currentAlfa += Time.deltaTime;
+                currentAlpha += Time.deltaTime;
                 
-                if (currentAlfa >= 1f)
+                if (currentAlpha >= 1f)
                 {
                     shouldBeVisible = false;
                     
@@ -83,9 +83,9 @@ public class CircleAnimation : MonoBehaviour
             }
             else
             {
-                currentAlfa -= Time.deltaTime;
+                currentAlpha -= Time.deltaTime;
                 
-                if (currentAlfa <= 0)
+                if (currentAlpha <= 0)
                 {
                     shouldBeVisible = true;
                     
@@ -94,7 +94,7 @@ public class CircleAnimation : MonoBehaviour
                 }
             }
             
-            circle.color = new Color(1, 1, 1, currentAlfa);
+            circle.color = new Color(1, 1, 1, currentAlpha);
         }
     }
 }

@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public static class CanvasScalerExtentions
+public static class CanvasScalerExtensions
 {
     public static void SetDefaultCanvasSettings(this CanvasScaler canvasScaler)
     {
