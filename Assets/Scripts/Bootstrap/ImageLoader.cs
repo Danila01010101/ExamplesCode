@@ -20,7 +20,7 @@ public class ImageLoader : MonoBehaviour, IProgressCounter
         
         using (UnityWebRequest request = UnityWebRequestTexture.GetTexture(url))
         {
-            request.SendWebRequest();
+            await request.SendWebRequest();
 
             while (!request.isDone)
             {
