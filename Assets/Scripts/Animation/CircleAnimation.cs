@@ -1,6 +1,5 @@
-using System;
 using System.Threading;
-using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,7 +7,7 @@ using UnityEngine.UI;
 public class CircleAnimation : MonoBehaviour
 {
     private Image circle;
-    private float currentAlpha = 0;
+    private float currentAlpha;
     private bool shouldBeVisible = true;
     private CancellationTokenSource currentAnimationToken;
     
@@ -64,13 +63,13 @@ public class CircleAnimation : MonoBehaviour
             currentAnimationToken.Cancel();
     }
 
-    private async Task Animate(CancellationToken token)
+    private async UniTask Animate(CancellationToken token)
     {
         circle.color = new Color(1, 1, 1, 0);
         
         while (true)
         {
-            await Task.Yield();
+            await UniTask.Yield();
                     
             if (token.IsCancellationRequested)
             {

@@ -1,10 +1,10 @@
 using System.Threading;
-using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 public static class TransformExtensions
 {
-    public static async Task MoveTo(this Transform transform, Vector3 position, float duration, CancellationToken token)
+    public static async UniTask MoveTo(this Transform transform, Vector3 position, float duration, CancellationToken token)
     {
         float animationDuration = 0;
         Vector3 startPosition = transform.position;
@@ -18,7 +18,7 @@ public static class TransformExtensions
             if (token.IsCancellationRequested)
                 return;
             
-            await Task.Yield();
+            await UniTask.Yield();
         }
         
         transform.position = position;

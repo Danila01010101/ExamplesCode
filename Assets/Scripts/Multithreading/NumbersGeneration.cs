@@ -1,6 +1,4 @@
-using System;
-using System.Threading;
-using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using Random = System.Random;
 
@@ -10,15 +8,14 @@ public class NumbersGeneration : MonoBehaviour
 
     private async void Start()
     {
-        var task = Task.Run(() => Generate());
-        await task;
-        Debug.Log(task.Result);
+        int task = await UniTask.RunOnThreadPool(Generate);
+        Debug.Log(task);
     }
 
     private int Generate()
     {
         int result = 0;
-        Random rand = new Random();
+        Random rand = new ();
         
         for (int i = 0; i < numbersAmount; i++)
         {

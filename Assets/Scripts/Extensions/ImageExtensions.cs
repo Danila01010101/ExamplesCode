@@ -1,11 +1,11 @@
 using System.Threading;
-using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 
 public static class ImageExtensions
 {
-    public static async Task ChangeAlpha(this Image image, float endValue, float duration, CancellationToken token)
+    public static async UniTask ChangeAlpha(this Image image, float endValue, float duration, CancellationToken token)
     {
         float animationDuration = 0;
         float startValue = image.color.a;
@@ -20,7 +20,7 @@ public static class ImageExtensions
             if (token.IsCancellationRequested)
                 return;
             
-            await Task.Yield();
+            await UniTask.Yield();
         }
         
         image.color = new Color(image.color.r, image.color.g, image.color.b, endValue);
