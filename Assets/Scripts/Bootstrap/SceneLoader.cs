@@ -1,5 +1,4 @@
-using System;
-using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -9,7 +8,7 @@ public class SceneLoader : IProgressCounter
 
     public float Progress { get; private set; }
 
-    public async Task PreloadScene(string sceneName)
+    public async UniTask PreloadScene(string sceneName)
     {
         _sceneLoad = SceneManager.LoadSceneAsync(sceneName);
         _sceneLoad.allowSceneActivation = false;
@@ -18,7 +17,7 @@ public class SceneLoader : IProgressCounter
         {
             Progress = _sceneLoad.progress;
             Debug.Log("Scene load awaiting");
-            await Task.Yield();
+            await UniTask.Yield();
         }
 
         Progress = 1f;

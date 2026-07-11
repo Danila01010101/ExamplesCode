@@ -340,10 +340,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 664ad5c0a93d51b4abe5635032d20749, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Bootstrap
-  bootstrapCanvas: {fileID: 133458873}
-  loaderScreenPrefab: {fileID: 4286794841873853697, guid: f5bdcf29ab899294daa16d1957ee92b0, type: 3}
-  imageUrl: https://i.ytimg.com/vi/UPQJBU174Nc/maxresdefault.jpg
-  loadingProgressSlider: {fileID: 243609415}
+  _bootstrapCanvas: {fileID: 133458873}
+  _loaderScreenPrefab: {fileID: 4286794841873853697, guid: f5bdcf29ab899294daa16d1957ee92b0, type: 3}
+  _imageUrl: https://i.ytimg.com/vi/UPQJBU174Nc/maxresdefault.jpg
+  _loadingProgressSlider: {fileID: 243609415}
 --- !u!4 &377162152
 Transform:
   m_ObjectHideFlags: 0

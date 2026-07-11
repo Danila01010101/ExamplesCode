@@ -1,17 +1,15 @@
-using System;
-using System.Collections;
-using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
+using UniTask = Cysharp.Threading.Tasks.UniTask;
 
 [RequireComponent(typeof(RawImage))]
 public class ImageLoader : MonoBehaviour, IProgressCounter
 {
     public float Progress { get; private set; }
 
-    public async Task Load(string url)
+    public async UniTask Load(string url)
     {
         Debug.Log("Start loading image " + url);
             
@@ -20,13 +18,15 @@ public class ImageLoader : MonoBehaviour, IProgressCounter
         
         using (UnityWebRequest request = UnityWebRequestTexture.GetTexture(url))
         {
-            await request.SendWebRequest();
+            var currentRequest = request.SendWebRequest().ToUniTask();
 
             while (!request.isDone)
             {
                 Progress = request.downloadProgress;
-                await Task.Yield();
+                await UniTask.Yield();
             }
+
+            await currentRequest;
         
             if(request.result == UnityWebRequest.Result.ConnectionError || request.result == UnityWebRequest.Result.ProtocolError)
             {

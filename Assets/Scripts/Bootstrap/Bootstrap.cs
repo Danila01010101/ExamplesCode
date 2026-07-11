@@ -1,50 +1,47 @@
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 public class Bootstrap : MonoBehaviour
 {
-    [SerializeField] private Canvas bootstrapCanvas;
-    [SerializeField] private ImageLoader loaderScreenPrefab;
-    [SerializeField] private string imageUrl;
+    [SerializeField] private Canvas _bootstrapCanvas;
+    [SerializeField] private ImageLoader _loaderScreenPrefab;
+    [SerializeField] private string _imageUrl;
     
-    [SerializeField] private Slider loadingProgressSlider;
+    [SerializeField] private Slider _loadingProgressSlider;
 
-    private List<Task> currentTasks = new List<Task>();
-    private List<IProgressCounter> currentProgressCounters = new List<IProgressCounter>();
+    private List<UniTask> _currentTasks = new ();
+    private List<IProgressCounter> _currentProgressCounters = new ();
     
-    private bool loading;
+    private bool _loading;
     
     private async void Start()
     {
         await Initialize();
     }
 
-    private async Task Initialize()
+    private async UniTask Initialize()
     {
-        loading = true;
-        ImageLoader imageLoader = Instantiate(loaderScreenPrefab, bootstrapCanvas.transform);
-        Task imageLoadingTask = imageLoader.Load(imageUrl);
+        _loading = true;
+        ImageLoader imageLoader = Instantiate(_loaderScreenPrefab, _bootstrapCanvas.transform);
+        UniTask imageLoadingTask = imageLoader.Load(_imageUrl);
         AddLoader(imageLoadingTask, imageLoader);
         imageLoader.transform.SetAsFirstSibling();
 
-        PrefabsLoader prefabsLoader = new PrefabsLoader();
-        Task prefabLoadingTask = prefabsLoader.LoadPrefab("Cube");
-        AddLoader(prefabLoadingTask, prefabsLoader);
+        PrefabsLoader prefabsLoader = new ();
+        ResourceRequest prefabLoadingRequest = Resources.LoadAsync<GameObject>("Cube");
+        AddLoader(prefabLoadingRequest.ToUniTask(), prefabsLoader);
         
-        SceneLoader sceneLoader = new SceneLoader();
-        Task sceneLoadingTask = sceneLoader.PreloadScene("EmptyScene");
+        SceneLoader sceneLoader = new ();
+        UniTask sceneLoadingTask = sceneLoader.PreloadScene("EmptyScene");
         AddLoader(sceneLoadingTask, sceneLoader);
         
-        await imageLoadingTask;
+        await UniTask.WhenAll(_currentTasks);
         
-        await Task.WhenAll(currentTasks);
-        
-        loading = false;
-        loadingProgressSlider.value = 1;
+        _loading = false;
+        _loadingProgressSlider.value = 1;
         
         Debug.Log("All tasks completed loading scene.");
         
@@ -53,29 +50,32 @@ public class Bootstrap : MonoBehaviour
 
     private void Update()
     {
-        if (loading)
+        if (_loading)
         {
             UpdateProgress();
         }
     }
 
-    private void AddLoader(Task task, IProgressCounter progressCounter)
+    private void AddLoader(UniTask task, IProgressCounter progressCounter)
     {
-        currentProgressCounters.Add(progressCounter);
-        currentTasks.Add(task);
+        _currentProgressCounters.Add(progressCounter);
+        _currentTasks.Add(task);
     }
 
     private void UpdateProgress()
     {
         float allTasksProgress = 0;
+        
+        if (_currentProgressCounters.Count == 0)
+            return;
 
-        foreach (var progressCounter in currentProgressCounters)
+        foreach (var progressCounter in _currentProgressCounters)
         {
             allTasksProgress += progressCounter.Progress;
         }
 
-        float result = (float)(Math.Round(allTasksProgress / currentProgressCounters.Count, 2));
+        float result = (float)(Math.Round(allTasksProgress / _currentProgressCounters.Count, 2));
         Debug.Log(result);
-        loadingProgressSlider.value = result;
+        _loadingProgressSlider.value = result;
     }
 }
