@@ -18,15 +18,13 @@ public class ImageLoader : MonoBehaviour, IProgressCounter
         
         using (UnityWebRequest request = UnityWebRequestTexture.GetTexture(url))
         {
-            var currentRequest = request.SendWebRequest().ToUniTask();
+            request.SendWebRequest();
 
             while (!request.isDone)
             {
                 Progress = request.downloadProgress;
                 await UniTask.Yield();
             }
-
-            await currentRequest;
         
             if(request.result == UnityWebRequest.Result.ConnectionError || request.result == UnityWebRequest.Result.ProtocolError)
             {

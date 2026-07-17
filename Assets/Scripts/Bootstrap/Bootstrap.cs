@@ -31,8 +31,8 @@ public class Bootstrap : MonoBehaviour
         imageLoader.transform.SetAsFirstSibling();
 
         PrefabsLoader prefabsLoader = new ();
-        ResourceRequest prefabLoadingRequest = Resources.LoadAsync<GameObject>("Cube");
-        AddLoader(prefabLoadingRequest.ToUniTask(), prefabsLoader);
+        var prefabLoadingRequest = prefabsLoader.LoadPrefab("Cube");
+        AddLoader(prefabLoadingRequest, prefabsLoader);
         
         SceneLoader sceneLoader = new ();
         UniTask sceneLoadingTask = sceneLoader.PreloadScene("EmptyScene");

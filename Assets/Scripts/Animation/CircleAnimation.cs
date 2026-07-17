@@ -26,6 +26,14 @@ public class CircleAnimation : MonoBehaviour
 
     private async void Update()
     {
+        await ReadInput();
+        
+        if (clicksCount == 3)
+            currentAnimationToken.Cancel();
+    }
+
+    private async UniTask ReadInput()
+    {
         if (Input.GetKeyDown(KeyCode.H))
         {
             await circle.ChangeAlpha(0, 1, currentAnimationToken.Token);
@@ -58,9 +66,6 @@ public class CircleAnimation : MonoBehaviour
         
         if (Input.GetMouseButtonDown(0))
             clicksCount++;
-        
-        if (clicksCount == 3)
-            currentAnimationToken.Cancel();
     }
 
     private async UniTask Animate(CancellationToken token)

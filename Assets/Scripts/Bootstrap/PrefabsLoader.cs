@@ -1,12 +1,13 @@
 using System;
 using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 public class PrefabsLoader: IProgressCounter
 {
     public float Progress { get; private set; }
     
-    public async Task LoadPrefab(string prefabPath)
+    public async UniTask LoadPrefab(string prefabPath)
     {
         Debug.Log("Start loading prefab " + prefabPath);
         var task = Resources.LoadAsync<GameObject>(prefabPath);
@@ -14,7 +15,7 @@ public class PrefabsLoader: IProgressCounter
         while (!task.isDone)
         {
             Progress = task.progress;
-            await Task.Yield();
+            await UniTask.Yield();
         }
 
         Progress = 1f;
